@@ -60,8 +60,23 @@ class UserProfilesManager(BaseMongoInterface):
         if result.deleted_count != 1:
             raise ProfileDeletionError(f"Failed to delete profile for user ID: {str(self.user_id)}")
 
-class ProfileNotFoundError(Exception):
-    pass
+def manage_user_profile(self, operation="retrieve", data=None):
+    valid_operations = ("create", "retrieve", "update", "delete")
+    if operation not in valid_operations:
+        raise ValueError(f"Operation '{operation}' invalid. Supported ones are: {valid_operations}.")
 
-class ProfileDeletionError(Exception):
-    pass
+    if operation == "create":
+        self.create_profile(data)
+    elif operation == "retrieve":
+        return self.get_profile()
+    elif operation == "update":
+        self.update_profile(data)
+    elif operation == "delete":
+        self.delete_profile()
+
+def create_profile(self, data):
+    """Create a new user profile."""
+    if not data:
+        raise ValueError("No data provided for profile creation.")
+    data['_id'] = self.user_id
+    self._collection.insert_one(data)
